@@ -21,11 +21,15 @@ public class InvoicingController {
 
 
     @GetMapping("/{orderId}")
-    public Mono<Order> findByOrderId(@PathVariable int orderId){
-        return orderService.get().uri("/orders/order/{orderId}", orderId)
+    public Invoice findByOrderId(@PathVariable int orderId){
+        Order order =  orderService.get().uri("/orders/order/{orderId}", orderId)
                 .retrieve()
-                .bodyToMono(Order.class);
-
+                .bodyToMono(Order.class).block();
+        Invoice invoice = new Invoice();
+        invoice.setTotal(order.total());
+        invoice.setPayment(order.payment());
+        // add the rest of the data items
+        return invoice;
     }
 
 
